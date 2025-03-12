@@ -22,17 +22,14 @@
         </div>
         <div class="form-group form-check">
             <input name="favorite" type="checkbox" class="form-check-input" v-model="contactLocal.favorite" />
-            <label for="favorite" class="form-check-label">
-                <strong>Liên hệ yêu thích</strong>
-            </label>
+            <label for="favorite" class="form-check-label"><strong>Liên hệ yêu thích</strong></label>
         </div>
         <div class="form-group custom">
-            <button class="btn btn-primary custom-item">Lưu</button>
-            <button v-if="contactLocal._id" type="button" class="ml-2 btn btn-danger custom-item"
-                @click="deleteContact">
+            <button class="btn btn-primary custom-item">{{ isEditMode ? "Lưu" : "Thêm mới" }}</button>
+            <button v-if="isEditMode" type="button" class="ml-2 btn btn-danger custom-item" @click="deleteContact">
                 Xóa
             </button>
-            <button type="button" class="ml-2 btn btn-danger custom-item" @click="Cancel">
+            <button type="button" class="ml-2 btn btn-danger custom-item" @click="cancel">
                 Thoát
             </button>
         </div>
@@ -41,41 +38,39 @@
 <script>
 import * as yup from "yup";
 import { Form, Field, ErrorMessage } from "vee-validate";
+
 export default {
-    components: {
-        Form,
-        Field,
-        ErrorMessage,
-    },
+    components: { Form, Field, ErrorMessage },
     emits: ["submit:contact", "delete:contact"],
     props: {
         contact: { type: Object, required: true }
     },
     data() {
         const contactFormSchema = yup.object().shape({
-            name: yup
-                .string()
-                .required("Tên phải có giá trị.")
-                .min(2, "Tên phải ít nhất 2 ký tự.")
-                .max(50, "Tên có nhiều nhất 50 ký tự."),
-            email: yup
-                .string()
-                .email("E-mail không đúng.")
-                .max(50, "E-mail tối đa 50 ký tự."),
+            name: yup.string().required("Tên phải có giá trị.").min(2, "Tên phải ít nhất 2 ký tự."),
+            email: yup.string().email("E-mail không đúng."),
             address: yup.string().max(100, "Địa chỉ tối đa 100 ký tự."),
-            phone: yup
-                .string()
-                .matches(
-                    /((09|03|07|08|05)+([0-9]{8})\b)/g,
-                    "Số điện thoại không hợp lệ."
-                ),
+            phone: yup.string().matches(/((09|03|07|08|05)+([0-9]{8})\b)/g, "Số điện thoại không hợp lệ."),
         });
+
         return {
-            // Chúng ta sẽ không muốn hiệu chỉnh props, nên tạo biến cục bộ
-            // contactLocal để liên kết với các input trên form
-            contactLocal: this.contact,
+            contactLocal: { ...this.contact }, // Sao chép dữ liệu từ props
             contactFormSchema,
         };
+    },
+    computed: {
+        isEditMode() {
+            return !!this.contact._id;
+        },
+    },
+    watch: {
+        contact: {
+            deep: true,
+            immediate: true, // Cập nhật ngay khi component render lần đầu
+            handler(newVal) {
+                this.contactLocal = { ...newVal }; // Cập nhật contactLocal khi dữ liệu thay đổi
+            }
+        }
     },
     methods: {
         submitContact() {
@@ -84,28 +79,22 @@ export default {
         deleteContact() {
             this.$emit("delete:contact", this.contactLocal.id);
         },
-        Cancel() {
-            const reply = window.confirm('You have unsaved changes! Do you want to  leave ? ')
-            if (!reply) {
-                // stay on the page if
-                // user clicks 'Cancel'
-                return false
-            }
-            else this.$router.push({ name: "contactbook" });
-        }
+        cancel() {
+            this.$router.push({ name: "contactbook" });
+        },
     },
 };
 </script>
-<style scoped>
-@import "@/assets/form.css";
+<style>
 .custom {
-    width: 30%;
+    width: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
 }
 
 .custom-item {
+    width: 30;
     margin-right: 5%;
 }
 </style>
