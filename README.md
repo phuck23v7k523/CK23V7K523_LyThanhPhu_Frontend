@@ -1,29 +1,7 @@
-# contactbook-frontend
+Bài tập thực hành CT449, HK2 2024-2025
 
-This template should help get you started developing with Vue 3 in Vite.
+MSSV: CK23V7K523
 
-## Recommended IDE Setup
+Họ tên SV: Lý Thành Phú
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+Nhóm học phần: CTCT449VLVH
